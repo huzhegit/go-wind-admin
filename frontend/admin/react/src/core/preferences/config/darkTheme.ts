@@ -5,7 +5,7 @@ import type { ThemeConfig } from 'antd';
  *
  *   L0 #0B0F19  地面：全局大背景（暗夜蓝黑，最暗）
  *   L1 #111827  一楼：搜索卡片 + 抽屉 + 表格容器（gray-900，比大底微亮）
- *   L2 #090D16  二楼：输入框/下拉框（更暗，与卡片对立 + 亮边框显形）
+ *   L2 #161F33  二楼：输入框/下拉框（比卡片微亮，"浮起"式，避免黑洞感）
  *   L3 #1F2937  表头独立次级深色；#1C2128 下拉/弹窗浮层
  *
  * 主色 #3B82F6（科技蓝）；文字基色 #F8FAFC；placeholder #64748B
@@ -15,9 +15,9 @@ export const DARK_PALETTE = {
   bgNav: '#111827',
   bgSurface: '#111827',
   bgElevated: '#1C2128',
-  bgInset: '#0A0F1C',
-  borderInput: 'rgba(148, 163, 184, 0.28)',
-  borderInputHover: 'rgba(148, 163, 184, 0.45)',
+  bgInset: '#161F33',
+  borderInput: 'rgba(148, 163, 184, 0.22)',
+  borderInputHover: 'rgba(148, 163, 184, 0.4)',
   borderCard: 'rgba(255, 255, 255, 0.05)',
   borderLine: 'rgba(255, 255, 255, 0.06)',
   textPrimary: '#F8FAFC',
@@ -76,9 +76,13 @@ export const darkThemeTokens: ThemeConfig['token'] = {
  * 边框等需 CSS 打根/新层（见 pro-components-dark.css）。
  */
 const inputLike = {
-  colorBgContainer: '#0A0F1C',
+  // 输入类控件底色比卡片微亮（"浮起"式）：原"内嵌更暗"方案在卡片上形成
+  // 一排近黑黑洞，与整体"越向前越亮"的明度层级相悖、观感突兀。
+  // 亮度差已足够定形，静默边框相应调柔（0.28→0.22）
+  colorBgContainer: '#161F33',
+  colorBorder: 'rgba(148, 163, 184, 0.22)',
   borderRadius: 6,
-  hoverBorderColor: 'rgba(148, 163, 184, 0.45)',
+  hoverBorderColor: 'rgba(148, 163, 184, 0.4)',
   activeBorderColor: '#3B82F6',
   activeShadow: '0 0 0 3px rgba(59, 130, 246, 0.12)',
 };

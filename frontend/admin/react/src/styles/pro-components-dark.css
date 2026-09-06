@@ -53,7 +53,7 @@
 }
 /* 暗色下分页器 hover/disabled */
 [data-theme='dark'] .ant-pagination-item:not(.ant-pagination-item-active):hover {
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
 }
 [data-theme='dark'] .ant-pagination-disabled .ant-pagination-item-link {
   color: #6e7681 !important;
@@ -154,9 +154,9 @@
 [data-theme='dark'] .ant-input-number,
 [data-theme='dark'] .ant-picker,
 [data-theme='dark'] textarea.ant-input:not(.ant-input-affix-wrapper textarea) {
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
   border-radius: 6px !important;
-  background-color: #090d16 !important;
+  background-color: #161f33 !important;
   color: #e6edf3 !important;
   /* 几何属性（min-height 等）不设主题专属值：亮暗控件高度必须一致 */
   box-shadow: none !important;
@@ -168,9 +168,9 @@
   border-radius: 6px;
 }
 [data-theme='dark'] .ant-select:not(.ant-select-disabled) {
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
   border-radius: 6px !important;
-  background-color: #090d16 !important;
+  background-color: #161f33 !important;
   color: #e6edf3 !important;
   box-shadow: none !important;
 }
@@ -180,9 +180,9 @@
    外层包装被撑高（暗色下曾达 41.3px，与亮色 31.3px 不一致）。 */
 html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input),
 html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input) {
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
   border-radius: 6px !important;
-  background-color: #090d16 !important;
+  background-color: #161f33 !important;
   color: #e6edf3 !important;
 }
 
@@ -239,7 +239,7 @@ html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-i
 [data-theme='dark'] .ant-select:not(.ant-select-disabled):hover,
 html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input):hover,
 html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input):hover {
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
 }
 
 /* focus：暗色下只把边框换成主色，不带外发光 ring（发光高亮观感刺眼，
@@ -262,7 +262,7 @@ html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-i
 html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input):focus,
 html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input):focus {
   border-color: var(--ant-color-primary) !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
 }
 
 /* ========== 搜索按钮与输入框等高（通用） ========== */
@@ -486,8 +486,8 @@ html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-i
 }
 
 [data-theme='dark'] .ant-tree-checkbox-inner {
-  background-color: #090d16 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: #161f33 !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
 }
 
 [data-theme='dark'] .ant-tree-checkbox-checked .ant-tree-checkbox-inner {
