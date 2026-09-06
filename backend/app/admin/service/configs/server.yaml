@@ -31,6 +31,7 @@ server:
         - "http://localhost:5666"
         - "http://localhost:5777"
         - "http://localhost:5888"
+        - "http://localhost:5667"
     middleware:
       enable_logging: true
       enable_recovery: true

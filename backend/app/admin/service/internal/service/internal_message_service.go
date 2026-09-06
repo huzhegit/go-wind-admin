@@ -294,7 +294,8 @@ func (s *InternalMessageService) UpdateMessage(ctx context.Context, req *interna
 }
 
 func (s *InternalMessageService) DeleteMessage(ctx context.Context, req *internalMessageV1.DeleteInternalMessageRequest) (*emptypb.Empty, error) {
-	if err := s.internalMessageRepo.Delete(ctx, req.GetId()); err != nil {
+	// 消息本体与收件记录同事务级联删除，避免留下孤儿收件行（收件箱出现无标题幽灵记录）。
+	if err := s.internalMessageRecipientRepo.DeleteMessageWithRecipients(ctx, req.GetId()); err != nil {
 		return nil, err
 	}
 	return &emptypb.Empty{}, nil

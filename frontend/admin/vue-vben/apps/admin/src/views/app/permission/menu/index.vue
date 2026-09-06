@@ -273,14 +273,18 @@ function normalizeAuthority(authority: unknown): string[] {
               class="size-full"
             />
           </div>
-          <span class="flex-auto">{{ $t(row.meta?.title) }}</span>
+          <!-- meta 缺失（直接 API 创建的菜单）时回退 name；$t(undefined) 会抛
+               Invalid arguments 使整个 grid 渲染崩溃（__vnode 污染） -->
+          <span class="flex-auto">
+            {{ row.meta?.title ? $t(row.meta.title) : (row.name ?? '-') }}
+          </span>
           <div class="items-center justify-end"></div>
         </div>
       </template>
       <template #icon="{ row }">
         <Icon
-          v-if="row.meta.icon !== undefined"
-          :icon="row.meta.icon"
+          v-if="row.meta?.icon !== undefined"
+          :icon="row.meta?.icon"
           class="mr-1 size-4 flex-shrink-0"
         />
       </template>

@@ -403,6 +403,55 @@ func (r *InternalMessageRecipientRepo) RevokeMessageWithMessage(ctx context.Cont
 	return nil
 }
 
+// DeleteMessageWithRecipients 删除消息本体及其全部收件记录（同一事务）。
+// 消息管理后台的删除入口走此方法，避免只删消息留下孤儿收件行
+// （收件箱/通知弹窗会出现无标题的幽灵记录）。
+func (r *InternalMessageRecipientRepo) DeleteMessageWithRecipients(ctx context.Context, messageID uint32) (err error) {
+	if messageID == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
+			err = internalMessageV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	var deleted int
+	if deleted, err = tx.InternalMessage.Delete().
+		Where(internalmessage.IDEQ(messageID)).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete message failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("delete message failed")
+	}
+	if deleted == 0 {
+		err = internalMessageV1.ErrorNotFound("internal message not found")
+		return err
+	}
+
+	if _, err = tx.InternalMessageRecipient.Delete().
+		Where(internalmessagerecipient.MessageIDEQ(messageID)).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete recipients failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("delete recipients failed")
+	}
+
+	return nil
+}
+
 // DeleteNotificationFromInbox 删除用户收件箱中的通知记录。
 // recipient_ids 为空表示清空该用户收件箱（前端"清空"入口无法枚举全部ID，
 // 与 MarkNotificationAsRead 的空 ids 语义保持一致）。

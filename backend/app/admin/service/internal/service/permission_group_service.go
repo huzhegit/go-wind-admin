@@ -108,13 +108,15 @@ func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.U
 func (s *PermissionGroupService) Delete(ctx context.Context, req *permissionV1.DeletePermissionGroupRequest) (*emptypb.Empty, error) {
 	var err error
 
-	if err = s.permissionGroupRepo.Delete(ctx, req); err != nil {
-		return nil, err
-	}
-
+	// 先清理组内权限点，再删分组本身（两 repo 无共享事务，顺序保证失败可重试：
+	// 权限点清理成功而分组删除失败时，组仍保留，重试删除不会产生孤儿数据）。
 	if err = s.permissionRepo.Delete(ctx, &permissionV1.DeletePermissionRequest{
 		QueryBy: &permissionV1.DeletePermissionRequest_GroupId{GroupId: req.GetId()},
 	}); err != nil {
+		return nil, err
+	}
+
+	if err = s.permissionGroupRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}
 

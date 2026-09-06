@@ -61,9 +61,24 @@ export class PaginationQuery {
       return undefined;
     }
 
+    // 后端 go-crud 的裸 `{"field": value}` 走 EQ 精确匹配；搜索框输入部分关键词
+    // 必须使用 `field__contains` 才是模糊匹配。这里约定：字符串值统一转
+    // `__contains`（contains 是完整值精确匹配的超集，对下拉枚举等完整值查询
+    // 结果一致），非字符串（数字/布尔）保持 EQ 精确语义。ID 类字段（*_id/idXxx）
+    // 即使值是字符串也保持 EQ：它们指向数字列且多为页面隐式固定参数，
+    // contains 会导致 SQL 报错或误匹配。
+    const fuzzy = Object.fromEntries(
+      Object.entries(cleaned).map(([key, value]) => [
+        typeof value === 'string' && !/(_id$|Id$|ID$|^id$)/.test(key)
+          ? `${key}__contains`
+          : key,
+        value,
+      ]),
+    );
+
     if (needCleanTenant) {
       // 删除租户相关字段 tenant_id 和 tenantId
-      const { tenant_id, tenantId, ...rest } = cleaned as Record<
+      const { tenant_id, tenantId, ...rest } = fuzzy as Record<
         string,
         unknown
       >;
@@ -76,8 +91,8 @@ export class PaginationQuery {
       return JSON.stringify(rest);
     }
 
-    // 默认返回整个 cleaned 对象的 JSON 字符串
-    return JSON.stringify(cleaned);
+    // 默认返回整个 fuzzy 对象的 JSON 字符串
+    return JSON.stringify(fuzzy);
   }
 
   /**

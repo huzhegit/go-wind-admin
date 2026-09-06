@@ -129,7 +129,8 @@ const MenuManagement = () => {
       fixed: 'left',
       render: (_, record) => {
         const meta = (record as any).meta || {};
-        const titleText = meta.title || '-';
+        // meta 缺失（如直接 API 创建的菜单）时回退展示 name，避免整列显示 "-"
+        const titleText = meta.title || (record as any).name || '-';
         return (
           <Space>
             <span>{titleText}</span>

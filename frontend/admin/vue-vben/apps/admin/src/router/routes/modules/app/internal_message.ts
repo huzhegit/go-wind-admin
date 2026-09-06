@@ -42,6 +42,21 @@ const internal_message: RouteRecordRaw[] = [
         component: () =>
           import('#/views/app/internal_message/category/index.vue'),
       },
+
+      {
+        // 收件箱不在侧边菜单展示（hideInMenu），入口为顶栏通知"查看所有消息"
+        path: 'inbox',
+        name: 'InternalMessageInbox',
+        meta: {
+          order: 3,
+          icon: 'lucide:inbox',
+          title: $t('menu.internalMessage.inbox'),
+          hideInMenu: true,
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
+        },
+        component: () =>
+          import('#/views/app/internal_message/inbox/index.vue'),
+      },
     ],
   },
 ];

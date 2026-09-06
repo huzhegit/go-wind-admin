@@ -54,6 +54,7 @@
   "internalMessage": {
     "moduleName": "Internal Messages",
     "internalMessage": "Message Management",
-    "internalMessageCategory": "Message Categories"
+    "internalMessageCategory": "Message Categories",
+    "inbox": "Inbox"
   }
 }

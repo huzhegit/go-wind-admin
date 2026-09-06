@@ -145,6 +145,11 @@ func (s *TaskService) Create(ctx context.Context, req *taskV1.CreateTaskRequest)
 		return nil, err
 	}
 
+	// 禁用状态的任务只需落库，不进入调度器
+	if !t.GetEnable() {
+		return &emptypb.Empty{}, nil
+	}
+
 	if err = s.startTask(t); err != nil {
 		// 调度失败不掩盖：DB 记录已建，但任务实际不会运行，需明确告知
 		s.log.Errorf(ctx, "create task [%s] succeeded but scheduling failed: %s", t.GetTypeName(), err.Error())

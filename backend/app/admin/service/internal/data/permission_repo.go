@@ -477,9 +477,9 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		permissionIDs = append(permissionIDs, req.GetId())
 
 	case *permissionV1.DeletePermissionRequest_Code:
+		// 注意：Query.IDs/Ints 内部已追加字段选择，外层再 Select 会重复列导致 scan 失败。
 		permissionIDs, err = r.entClient.Client().Permission.Query().
 			Where(permission.CodeEQ(req.GetCode())).
-			Select(permission.FieldID).
 			IDs(ctx)
 		if err != nil {
 			r.log.Errorf(ctx, "get permission ids by code failed: %s", err.Error())
@@ -489,7 +489,6 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 	case *permissionV1.DeletePermissionRequest_GroupId:
 		permissionIDs, err = r.entClient.Client().Permission.Query().
 			Where(permission.GroupIDEQ(req.GetGroupId())).
-			Select(permission.FieldID).
 			IDs(ctx)
 		if err != nil {
 			r.log.Errorf(ctx, "get permission ids by group id failed: %s", err.Error())

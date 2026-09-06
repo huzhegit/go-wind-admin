@@ -50,7 +50,7 @@ const menus = computed(() => [
     text: $t('menu.profile.settings'),
   },
   {
-    handler: () => router.push('/inbox'),
+    handler: () => router.push('/internal-message/inbox'),
     icon: LucideInbox,
     text: $t('menu.profile.internalMessage'),
   },
@@ -193,7 +193,7 @@ async function handleMakeAll() {
  * 查看所有消息，跳转至收件箱
  */
 function handleViewAllNotifications() {
-  router.push('/inbox');
+  router.push('/internal-message/inbox');
 }
 
 function hasMessage(data: InternalMessageRecipient): boolean {

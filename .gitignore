@@ -40,3 +40,6 @@ bin/
 # 浏览器 e2e 测试产物（截图、playwright 缓存）
 chk-*.png
 .playwright-mcp/
+
+# GUI e2e 扫测截图证据（会话产物不入库）
+gui-test-screenshots/

@@ -242,7 +242,9 @@ const gridOptions: VxeGridProps<User> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 120,
+      // 4 个图标按钮（详情/编辑/重置MFA/删除）实际渲染约 130px+，
+      // 列宽 120 时删除按钮溢出 fixed 列容器被裁剪，无法点击
+      width: 160,
     },
   ],
 };

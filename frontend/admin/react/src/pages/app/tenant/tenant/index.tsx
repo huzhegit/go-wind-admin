@@ -120,7 +120,11 @@ const TenantList = () => {
       ),
       render: (_, record) => {
         const status = record.auditStatus as keyof typeof auditStatusMap;
-        const config = auditStatusMap[status] || { text: t('auditUnknown'), color: 'default' };
+        // 未送审（auditStatus 为空/未指定）的租户显示 "-" 而非 "未知"
+        const config = auditStatusMap[status] || {
+          text: status ? t('auditUnknown') : '-',
+          color: 'default',
+        };
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },
