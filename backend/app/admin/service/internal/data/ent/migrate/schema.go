@@ -1863,6 +1863,11 @@ var (
 		PrimaryKey: []*schema.Column{SysPlansColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "uix_sys_plans_name",
+				Unique:  true,
+				Columns: []*schema.Column{SysPlansColumns[8]},
+			},
+			{
 				Name:    "idx_sys_plans_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{SysPlansColumns[1]},

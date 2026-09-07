@@ -191,6 +191,11 @@ func (r *PlanRepo) Create(ctx context.Context, req *identityV1.CreatePlanRequest
 	}
 
 	if _, err = builder.Save(ctx); err != nil {
+		// sys_plans.name 有唯一索引：重名是用户可自行纠正的输入错误，返回 400 而非 500
+		if ent.IsConstraintError(err) {
+			r.log.Warnf(ctx, "insert plan duplicated: %s", err.Error())
+			return identityV1.ErrorBadRequest("plan name [%s] already exists", req.Data.GetName())
+		}
 		r.log.Errorf(ctx, "insert plan failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert plan failed")
 	}
@@ -258,6 +263,11 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 		},
 	)
 	if err != nil {
+		// 名称改重时命中 uix_sys_plans_name 唯一索引，返回 400 而非 500
+		if ent.IsConstraintError(err) {
+			r.log.Warnf(ctx, "update plan duplicated: %s", err.Error())
+			return identityV1.ErrorBadRequest("plan name [%s] already exists", req.Data.GetName())
+		}
 		r.log.Errorf(ctx, "update plan failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update plan failed")
 	}

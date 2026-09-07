@@ -10,7 +10,7 @@ import "animate.css";
 
 import { setupDirective } from "@/directives";
 import { setupI18n } from "@/core/i18n";
-import { setupRouter } from "@/router";
+import { router, setupRouter } from "@/router";
 import { initStores } from "@/stores/setup";
 import { registerGlobComp } from "@/registerGlobComp";
 import { initPreferences } from "@/core/preferences";
@@ -115,6 +115,24 @@ async function bootstrap(namespace: string) {
 
   // 国际化 i18n 配置
   await setupI18n(app);
+
+  // 全局错误观测：渲染函数/守卫抛出的异常若无人接管会静默吞掉，
+  // 表现为 router-view 塌空白屏且零控制台输出，极难定位。这里强制落到
+  // console.error，保证任何渲染期异常都有迹可循（曾用于排查路由白屏）。
+  app.config.errorHandler = (err, instance, info) => {
+    console.error(
+      "[AppErrorHandler]",
+      info,
+      err,
+      instance?.$options?.name || instance?.$options?.__name,
+    );
+  };
+
+  // 懒加载路由组件加载失败（网络抖动/dev 模块失效）同样默认静默，
+  // 记录失败路由与原因，便于与白屏现象对账。
+  router.onError((error, to) => {
+    console.error("[RouterError]", to?.fullPath, error);
+  });
 
   // 挂载应用
   app.mount("#app");

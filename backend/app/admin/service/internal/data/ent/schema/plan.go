@@ -106,6 +106,10 @@ func (Plan) Mixin() []ent.Mixin {
 // Indexes of the Plan.
 func (Plan) Indexes() []ent.Index {
 	return []ent.Index{
+		// 套餐名称唯一：同名套餐会让租户订阅与配额映射产生歧义
+		// （列可空，pg 唯一索引允许多个 NULL，不影响历史无名称行）
+		index.Fields("name").Unique().StorageKey("uix_sys_plans_name"),
+
 		// 创建时间索引，用于套餐列表的时间区间查询与分页
 		index.Fields("created_at").StorageKey("idx_sys_plans_created_at"),
 	}
