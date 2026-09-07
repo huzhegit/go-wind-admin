@@ -22,7 +22,7 @@ Easy to get started, feature-rich, deeply adapted to enterprise scenarios, helpi
 >
 > Backend Swagger: <https://api.demo.admin.gowind.cloud/docs/>
 >
-> Default account/password: `admin` / `admin`
+> Default account/password: `admin` / `Abcd@1234`
 
 ## Tech Stack
 

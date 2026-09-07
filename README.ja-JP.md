@@ -22,7 +22,7 @@
 >
 > バックエンド Swagger：<https://api.demo.admin.gowind.cloud/docs/>
 >
-> デフォルトユーザー: `admin` / `admin`
+> デフォルトユーザー: `admin` / `Abcd@1234`
 
 ## コア技術スタック
 

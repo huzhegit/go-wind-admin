@@ -10,6 +10,7 @@ import (
 	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -69,8 +70,22 @@ func NewUserService(
 
 func (s *UserService) init() {
 	ctx := appViewer.NewSystemViewerContext(context.Background())
+
 	if count, _ := s.userRepo.Count(ctx, nil); count == 0 {
-		_ = s.createDefaultUser(ctx)
+		if err := s.createDefaultUser(ctx); err != nil {
+			s.log.Errorf(ctx, "init default user data failed: %v", err)
+		}
+		return
+	}
+
+	// 自愈历史缺陷：空库部署时默认凭证曾因 admin 不满足等保口令复杂度被拒
+	// （issue #58），初始化半途而废——用户行已建、凭证行缺失且错误被吞，
+	// admin 从此无法登录。正常路径下每个用户创建时必带凭证，凭证表为空
+	// 只可能是初始化半途失败所致；彼时 admin 是空表首行，id 必为 1，按种子补种。
+	if count, _ := s.userCredentialRepo.Count(ctx, nil); count == 0 {
+		if err := s.createDefaultUserCredentials(ctx, 0); err != nil {
+			s.log.Errorf(ctx, "reseed default user credentials failed: %v", err)
+		}
 	}
 }
 
@@ -655,23 +670,23 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 	var err error
 
 	// 创建默认用户
+	var defaultUserID uint32
 	for _, user := range constants.DefaultUsers {
-		if _, err = s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
+		var created *identityV1.User
+		if created, err = s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
 			Data: user,
 		}); err != nil {
 			s.log.Errorf(ctx, "create default user err: %v", err)
 			return err
 		}
+		if created.GetId() > 0 {
+			defaultUserID = created.GetId()
+		}
 	}
 
-	// 创建默认用户凭证
-	for _, userCredential := range constants.DefaultUserCredentials {
-		if err = s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
-			Data: userCredential,
-		}); err != nil {
-			s.log.Errorf(ctx, "create default user credential err: %v", err)
-			return err
-		}
+	// 创建默认用户凭证（绑定实际生成的用户 ID，auto_increment 不保证首行是 1）
+	if err = s.createDefaultUserCredentials(ctx, defaultUserID); err != nil {
+		return err
 	}
 
 	switch constants.DefaultUserTenantRelationType {
@@ -697,4 +712,23 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 	}
 
 	return err
+}
+
+// createDefaultUserCredentials 种入默认用户凭证。
+// overrideUserID > 0 时覆盖种子里的 UserId（初始化路径绑定实际生成的用户 ID）；
+// 为 0 时保留种子原值（自愈补种路径，此时 admin 即空表首行 id=1）。
+func (s *UserService) createDefaultUserCredentials(ctx context.Context, overrideUserID uint32) error {
+	for _, userCredential := range constants.DefaultUserCredentials {
+		credential := proto.Clone(userCredential).(*authenticationV1.UserCredential)
+		if overrideUserID > 0 {
+			credential.UserId = trans.Ptr(overrideUserID)
+		}
+		if err := s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
+			Data: credential,
+		}); err != nil {
+			s.log.Errorf(ctx, "create default user credential err: %v", err)
+			return err
+		}
+	}
+	return nil
 }

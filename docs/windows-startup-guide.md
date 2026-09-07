@@ -258,7 +258,7 @@ pnpm dev:antd
 
 启动成功后访问 http://localhost:5666
 
-默认登录账号：`admin`，密码：`admin`
+默认登录账号：`admin`，密码：`Abcd@1234`
 
 ### 首次 `pnpm install` 后 `pnpm dev` 报错 `turbo-run` 找不到？
 

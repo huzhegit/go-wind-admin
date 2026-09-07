@@ -15,10 +15,10 @@ import (
 const (
 	// DefaultAdminUserName 系统初始化默认管理员用户名
 	DefaultAdminUserName = "admin"
-	// DefaultAdminPassword 系统初始化默认管理员用户密码
-	DefaultAdminPassword = "admin"
 
-	// DefaultUserPassword 系统初始化默认普通用户密码（须满足 pkg/password 复杂度策略：≥8位且至少3类字符）
+	// DefaultUserPassword 系统初始化默认密码（管理员与普通用户统一，须满足
+	// pkg/password 复杂度策略：≥8位且至少3类字符——种子凭证经 prepareCredential
+	// 入库时会做复杂度校验，不达标会被拒、初始化半途而废，admin 从此无法登录）
 	DefaultUserPassword = "Abcd@1234"
 
 	// PlatformTenantID 平台管理员租户ID
@@ -234,7 +234,7 @@ var DefaultUserCredentials = []*authenticationV1.UserCredential{
 		IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 		Identifier:     trans.Ptr(DefaultAdminUserName),
 		CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
-		Credential:     trans.Ptr(DefaultAdminPassword),
+		Credential:     trans.Ptr(DefaultUserPassword),
 		IsPrimary:      trans.Ptr(true),
 		Status:         authenticationV1.UserCredential_ENABLED.Enum(),
 	},

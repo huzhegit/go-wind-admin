@@ -38,7 +38,7 @@
 | React | <https://react.admin.gowind.cloud> |
 
 - 后端 Swagger：<https://api.demo.admin.gowind.cloud/docs/>
-- 默认账号密码：`admin` / `admin`
+- 默认账号密码：`admin` / `Abcd@1234`
 
 ---
 
